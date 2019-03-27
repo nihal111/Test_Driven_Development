@@ -12,10 +12,10 @@ jobs:
           command: |
             pip install coverage --user
             pip install codecov --user
-            export PATH=/path/to/foo/bin:$PATH
       - run:
           name: Run Tests
           command: |
+            export PATH=$HOME/.local/bin:$PATH
             coverage run -m unittest
             coverage report
             coverage html
