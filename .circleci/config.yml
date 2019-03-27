@@ -11,7 +11,7 @@ jobs:
           name: Setup testing environment
           command: |
             pip install coverage --user
-            pip install --user codecov
+            pip install codecov --user
             echo $HOME
       - run:
           name: Run Tests
