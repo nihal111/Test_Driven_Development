@@ -86,7 +86,7 @@ class TestBookkeeper(unittest.TestCase):
     #     self.assertEqual(mock_stdout.getvalue(),
     #                      "1. Add\n2. Edit\n3. Delete\n\n")
 
-    @patch('bookkeeper.main.get_input', return_value='1')
+    @patch('builtins.input', return_value='1')
     def test_main_menu_add(self, input):
         menu_driven = main.MenuDriven()
         menu_driven.add_screen = MagicMock()
@@ -98,7 +98,7 @@ class TestBookkeeper(unittest.TestCase):
         sys.stdout = sys.__stdout__              # Reset redirect.
         assert menu_driven.add_screen.called
 
-    @patch('bookkeeper.main.get_input', return_value='2')
+    @patch('builtins.input', return_value='2')
     def test_main_menu_edit(self, input):
         menu_driven = main.MenuDriven()
         menu_driven.edit_screen = MagicMock()
@@ -110,7 +110,7 @@ class TestBookkeeper(unittest.TestCase):
         sys.stdout = sys.__stdout__              # Reset redirect.
         assert menu_driven.edit_screen.called
 
-    @patch('bookkeeper.main.get_input', return_value='3')
+    @patch('builtins.input', return_value='3')
     def test_main_menu_delete(self, input):
         menu_driven = main.MenuDriven()
         menu_driven.delete_screen = MagicMock()
@@ -122,7 +122,21 @@ class TestBookkeeper(unittest.TestCase):
         sys.stdout = sys.__stdout__              # Reset redirect.
         self.assertTrue(menu_driven.delete_screen.called)
 
-    @patch('bookkeeper.main.get_input')
+    @patch('builtins.input', return_value='q')
+    def test_main_menu_quit(self, input):
+        menu_driven = main.MenuDriven()
+        captured_output = io.StringIO()          # Create StringIO object
+        sys.stdout = captured_output             # and redirect stdout.
+
+        with self.assertRaises(SystemExit) as cm:
+            menu_driven.main_menu()
+            self.assertEqual(cm.exception.code, 1)
+
+        self.assertEqual(captured_output.getvalue(),
+                         "1. Add\n2. Edit\n3. Delete\nq. Quit\n\n")
+        sys.stdout = sys.__stdout__              # Reset redirect.
+
+    @patch('builtins.input')
     def test_marks_input1(self, mock_get_input):
         mock_get_input.side_effect = ['14', '16a', '16', '15']
         captured_output = io.StringIO()          # Create StringIO object
@@ -130,7 +144,7 @@ class TestBookkeeper(unittest.TestCase):
         main.get_marks()
         sys.stdout = sys.__stdout__              # Reset redirect.
 
-    @patch('bookkeeper.main.get_input')
+    @patch('builtins.input')
     def test_marks_input2(self, mock_get_input):
         mock_get_input.side_effect = ['14,5', '14.5', '16', '15']
         captured_output = io.StringIO()          # Create StringIO object
@@ -138,7 +152,7 @@ class TestBookkeeper(unittest.TestCase):
         main.get_marks()
         sys.stdout = sys.__stdout__              # Reset redirect.
 
-    @patch('bookkeeper.main.get_input')
+    @patch('builtins.input')
     def test_enter_details(self, mock_get_input):
         menu_driven = main.MenuDriven()
         mock_get_input.side_effect = [
@@ -176,7 +190,7 @@ class TestBookkeeper(unittest.TestCase):
         self.assertTrue(menu_driven.main_menu.called)
         os.remove(path)
 
-    @patch('bookkeeper.main.get_input')
+    @patch('builtins.input')
     def test_edit_screen(self, mock_get_input):
         menu_driven = main.MenuDriven()
         path = "test_{}.txt".format(random.randint(1000, 9999))
@@ -203,7 +217,7 @@ class TestBookkeeper(unittest.TestCase):
 
         os.remove(path)
 
-    @patch('bookkeeper.main.get_input')
+    @patch('builtins.input')
     def test_edit_screen_q(self, mock_get_input):
         menu_driven = main.MenuDriven()
 
@@ -218,7 +232,7 @@ class TestBookkeeper(unittest.TestCase):
 
         self.assertTrue(menu_driven.main_menu.called)
 
-    @patch('bookkeeper.main.get_input')
+    @patch('builtins.input')
     def test_delete_screen(self, mock_get_input):
         menu_driven = main.MenuDriven()
         menu_driven.main_menu = MagicMock()
@@ -238,7 +252,7 @@ class TestBookkeeper(unittest.TestCase):
 
         os.remove(path)
 
-    @patch('bookkeeper.main.get_input')
+    @patch('builtins.input')
     def test_delete_screen_q(self, mock_get_input):
         menu_driven = main.MenuDriven()
 
@@ -246,12 +260,21 @@ class TestBookkeeper(unittest.TestCase):
         menu_driven.book.student_list = self.student_list
         mock_get_input.side_effect = ['q']
 
-        # captured_output = io.StringIO()          # Create StringIO object
-        # sys.stdout = captured_output             # and redirect stdout.
+        captured_output = io.StringIO()          # Create StringIO object
+        sys.stdout = captured_output             # and redirect stdout.
         menu_driven.delete_screen()
         sys.stdout = sys.__stdout__              # Reset redirect.
 
         self.assertTrue(menu_driven.main_menu.called)
+
+    @patch('bookkeeper.main.MenuDriven')
+    def test_main(self, mock_menu_driven):
+        mock_instance = mock_menu_driven.return_value
+
+        main.main()
+
+        mock_menu_driven.assert_called_with()
+        mock_instance.main_menu.assert_called_with()
 
 
 if __name__ == '__main__':

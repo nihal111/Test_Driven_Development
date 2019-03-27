@@ -1,4 +1,5 @@
 import os
+import sys
 
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -45,16 +46,12 @@ class Book:
             self.student_list.append(s)
 
 
-def get_input(msg=""):
-    return input(msg)
-
-
 def get_marks():
     marks = []
     for i in range(3):
         valid = False
         while not valid:
-            m = get_input("Enter marks {}: ".format(i))
+            m = input("Enter marks {}: ".format(i))
             try:
                 marks.append(float(m))
             except Exception:
@@ -71,7 +68,7 @@ class MenuDriven:
 
     def main_menu(self):
         print("1. Add\n2. Edit\n3. Delete\nq. Quit\n")
-        opt = get_input()
+        opt = input()
         if opt == '1':
             self.add_screen()
         if opt == '2':
@@ -79,11 +76,11 @@ class MenuDriven:
         if opt == '3':
             self.delete_screen()
         if opt == 'q':
-            exit()
+            sys.exit()
 
     def enter_details(self):
-        name = get_input("Enter Name: ")
-        phone_number = get_input("Enter Phone Number: ")
+        name = input("Enter Name: ")
+        phone_number = input("Enter Phone Number: ")
         marks = get_marks()
         student = Student(name, phone_number, marks)
 
@@ -99,7 +96,7 @@ class MenuDriven:
     def edit_screen(self):
         match = None
         while match is None:
-            name = get_input("Find by Name: (q to go back) ")
+            name = input("Find by Name: (q to go back) ")
             if name.strip() == 'q':
                 self.main_menu()
                 return
@@ -120,7 +117,7 @@ class MenuDriven:
     def delete_screen(self):
         match = None
         while match is None:
-            name = get_input("Find by Name: (q to go back) ")
+            name = input("Find by Name: (q to go back) ")
             if name == 'q':
                 self.main_menu()
                 return
@@ -137,6 +134,10 @@ class MenuDriven:
         self.main_menu()
 
 
-if __name__ == '__main__':
+def main():
     menu = MenuDriven()
     menu.main_menu()
+
+
+if __name__ == '__main__':
+    main()
