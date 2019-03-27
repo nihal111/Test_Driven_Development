@@ -12,15 +12,13 @@ jobs:
           command: |
             pip install coverage --user
             pip install codecov --user
-            echo $HOME
+            export PATH=/path/to/foo/bin:$PATH
       - run:
           name: Run Tests
           command: |
-            $HOME/.local/bin/coverage run -m unittest
-            $HOME/.local/bin/coverage report
-            $HOME/.local/bin/coverage html  # open htmlcov/index.html in a browser
-            $HOME/.local/bin/codecov
+            coverage run -m unittest
+            coverage report
+            coverage html
+            codecov
       - store_artifacts:
           path: htmlcov
-      - codecov/upload:
-          file: htmlcov
