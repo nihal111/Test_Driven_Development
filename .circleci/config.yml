@@ -1,4 +1,6 @@
-version: 2
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.2
 jobs:
   build:
     docker:
@@ -9,6 +11,7 @@ jobs:
           name: Setup testing environment
           command: |
             pip install coverage --user
+            pip install --user codecov
             echo $HOME
       - run:
           name: Run Tests
@@ -16,5 +19,8 @@ jobs:
             $HOME/.local/bin/coverage run -m unittest
             $HOME/.local/bin/coverage report
             $HOME/.local/bin/coverage html  # open htmlcov/index.html in a browser
+            codecov
       - store_artifacts:
           path: htmlcov
+      - codecov/upload:
+          file: htmlcov
